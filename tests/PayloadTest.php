@@ -28,10 +28,7 @@ use HyperfExt\Jwt\Payload;
  */
 class PayloadTest extends AbstractTestCase
 {
-    /**
-     * @var \HyperfExt\Jwt\Payload
-     */
-    protected $payload;
+    protected Payload $payload;
 
     public function setUp(): void
     {
@@ -217,10 +214,7 @@ class PayloadTest extends AbstractTestCase
         $this->assertFalse($this->payload->matches($values));
     }
 
-    /**
-     * @return \HyperfExt\Jwt\Payload
-     */
-    private function getTestPayload(array $extraClaims = [])
+    private function getTestPayload(array $extraClaims = []): Payload
     {
         $claims = [
             new Subject(1),

@@ -15,33 +15,22 @@ use Hyperf\Utils\Contracts\Arrayable;
 use Hyperf\Utils\Contracts\Jsonable;
 use HyperfExt\Jwt\Contracts\ClaimInterface;
 use HyperfExt\Jwt\Contracts\ManagerInterface;
-use JsonSerializable;
 
-abstract class AbstractClaim implements ClaimInterface, Arrayable, Jsonable, JsonSerializable
+abstract class AbstractClaim implements ClaimInterface, Arrayable, Jsonable, \JsonSerializable
 {
     /**
      * The claim name.
-     *
-     * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * The claim value.
-     *
-     * @var mixed
      */
-    private $value;
+    private mixed $value;
 
-    /**
-     * @var \HyperfExt\Jwt\Claims\Factory
-     */
-    private $factory;
+    private Factory $factory;
 
-    /**
-     * @param mixed $value
-     */
-    public function __construct($value)
+    public function __construct(mixed $value)
     {
         $this->setValue($value);
     }
@@ -57,11 +46,9 @@ abstract class AbstractClaim implements ClaimInterface, Arrayable, Jsonable, Jso
     /**
      * Set the claim value, and call a validate method.
      *
-     * @param mixed $value
-     *
      * @return $this
      */
-    public function setValue($value)
+    public function setValue(mixed $value): static
     {
         $this->value = $this->validateCreate($value);
 
@@ -70,10 +57,8 @@ abstract class AbstractClaim implements ClaimInterface, Arrayable, Jsonable, Jso
 
     /**
      * Get the claim value.
-     *
-     * @return mixed
      */
-    public function getValue()
+    public function getValue(): mixed
     {
         return $this->value;
     }
@@ -83,7 +68,7 @@ abstract class AbstractClaim implements ClaimInterface, Arrayable, Jsonable, Jso
      *
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
@@ -100,20 +85,16 @@ abstract class AbstractClaim implements ClaimInterface, Arrayable, Jsonable, Jso
 
     /**
      * Validate the claim in a standalone Claim context.
-     *
-     * @param mixed $value
      */
-    public function validateCreate($value)
+    public function validateCreate(mixed $value)
     {
         return $value;
     }
 
     /**
      * Checks if the value matches the claim.
-     *
-     * @param mixed $value
      */
-    public function matches($value, bool $strict = true): bool
+    public function matches(mixed $value, bool $strict = true): bool
     {
         return $strict ? $this->value === $value : $this->value == $value;
     }

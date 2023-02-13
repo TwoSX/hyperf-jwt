@@ -10,11 +10,9 @@ declare(strict_types=1);
  */
 namespace HyperfTest;
 
-use Exception;
 use HyperfExt\Jwt\Codec;
 use HyperfExt\Jwt\Exceptions\JwtException;
 use HyperfExt\Jwt\Exceptions\TokenInvalidException;
-use InvalidArgumentException;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
@@ -24,7 +22,8 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\DataSet;
 use Lcobucci\JWT\Validation\Constraint;
 use Lcobucci\JWT\Validator;
-use Mockery;
+use Mockery\MockInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * @internal
@@ -32,28 +31,19 @@ use Mockery;
  */
 class CodecTest extends AbstractTestCase
 {
-    /**
-     * @var \Mockery\MockInterface
-     */
-    protected $parser;
+    protected MockInterface $parser;
 
-    /**
-     * @var \Mockery\MockInterface
-     */
-    protected $builder;
+    protected MockInterface $builder;
 
-    /**
-     * @var \Mockery\MockInterface
-     */
-    protected $validator;
+    protected MockInterface $validator;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->builder = Mockery::mock(Builder::class);
-        $this->parser = Mockery::mock(Parser::class);
-        $this->validator = Mockery::mock(Validator::class);
+        $this->builder = \Mockery::mock(Builder::class);
+        $this->parser = \Mockery::mock(Parser::class);
+        $this->validator = \Mockery::mock(Validator::class);
     }
 
     /** @test */
@@ -89,7 +79,7 @@ class CodecTest extends AbstractTestCase
             ->shouldReceive('getToken')
             ->once()
             ->with(\Mockery::type(Signer::class), \Mockery::type(Key::class))
-            ->andReturn(new Token\Plain(new DataSet([], 'header'), $dataSet, (new Token\Signature('', 'signature'))));
+            ->andReturn(new Token\Plain(new DataSet([], 'header'), $dataSet, new Token\Signature('', 'signature')));
 
         /** @var Token $token */
         $token = $this->getCodec('secret', 'HS256')->encode($payload);
@@ -113,7 +103,7 @@ class CodecTest extends AbstractTestCase
             ->shouldReceive('getToken')
             ->once()
             ->with(\Mockery::type(Signer::class), \Mockery::type(Key::class))
-            ->andThrow(new Exception());
+            ->andThrow(new \Exception());
 
         $this->getCodec('secret', 'HS256')->encode($payload);
     }
@@ -123,13 +113,13 @@ class CodecTest extends AbstractTestCase
     {
         $payload = ['sub' => 1, 'exp' => $this->testNowTimestamp + 3600, 'iat' => $this->testNowTimestamp, 'iss' => '/foo'];
 
-        $token = Mockery::mock(Token::class);
-        $dataSet = Mockery::mock(new DataSet($payload, 'payload'));
+        $token = \Mockery::mock(Token::class);
+        $dataSet = \Mockery::mock(new DataSet($payload, 'payload'));
 
         $codec = $this->getCodec('secret', 'HS256');
 
         $this->parser->shouldReceive('parse')->once()->with('foo.bar.baz')->andReturn($token);
-        $this->validator->shouldReceive('validate')->once()->with($token, Mockery::any())->andReturnTrue();
+        $this->validator->shouldReceive('validate')->once()->with($token, \Mockery::any())->andReturnTrue();
         $token->shouldReceive('claims')->once()->andReturn($dataSet);
         $dataSet->shouldReceive('all')->once()->andReturn($payload);
 
@@ -139,8 +129,8 @@ class CodecTest extends AbstractTestCase
     /** @test */
     public function itShouldThrowATokenInvalidExceptionWhenTheTokenCouldNotBeDecodedDueToABadSignature()
     {
-        $token = Mockery::mock(Token::class);
-        $dataSet = Mockery::mock(new DataSet(['pay', 'load'], 'payload'));
+        $token = \Mockery::mock(Token::class);
+        $dataSet = \Mockery::mock(new DataSet(['pay', 'load'], 'payload'));
 
         $codec = $this->getCodec('secret', 'HS256');
 
@@ -148,7 +138,7 @@ class CodecTest extends AbstractTestCase
         $this->expectExceptionMessage('Token Signature could not be verified.');
 
         $this->parser->shouldReceive('parse')->once()->with('foo.bar.baz')->andReturn($token);
-        $this->validator->shouldReceive('validate')->once()->with($token, Mockery::any())->andReturnFalse();
+        $this->validator->shouldReceive('validate')->once()->with($token, \Mockery::any())->andReturnFalse();
         $token->shouldReceive('claims')->never();
         $dataSet->shouldReceive('all')->never();
 
@@ -161,7 +151,7 @@ class CodecTest extends AbstractTestCase
         $this->expectException(TokenInvalidException::class);
         $this->expectExceptionMessage('Could not decode token:');
 
-        $this->parser->shouldReceive('parse')->once()->with('foo.bar.baz')->andThrow(new InvalidArgumentException());
+        $this->parser->shouldReceive('parse')->once()->with('foo.bar.baz')->andThrow(new \InvalidArgumentException());
         $this->parser->shouldReceive('verify')->never();
         $this->parser->shouldReceive('getClaims')->never();
 
@@ -191,8 +181,8 @@ class CodecTest extends AbstractTestCase
         $this->builder
             ->shouldReceive('getToken')
             ->once()
-            ->with(Mockery::type(RS256::class), Mockery::type(Key::class))
-            ->andReturn(new Token\Plain(new DataSet([], 'header'), $dataSet, (new Token\Signature('', 'signature'))));
+            ->with(\Mockery::type(RS256::class), \Mockery::type(Key::class))
+            ->andReturn(new Token\Plain(new DataSet([], 'header'), $dataSet, new Token\Signature('', 'signature')));
 
         $token = $codec->encode($payload);
 
@@ -239,36 +229,28 @@ class CodecTest extends AbstractTestCase
         $this->assertSame($keys, $codec->getKeys());
     }
 
-    /**
-     * @param $secret
-     * @param $algo
-     *
-     * @return \HyperfExt\Jwt\Codec|\PHPUnit\Framework\MockObject\MockObject
-     */
-    public function getCodec($secret, $algo, array $keys = [])
+    public function getCodec(mixed $secret, mixed $algo, array $keys = []): Codec|MockObject
     {
         $codec = new Codec($secret, $algo, $keys);
-        $config = Mockery::mock($codec->getConfig());
-
-        $codec = new Codec($secret, $algo, $keys, $config);
+        $config = \Mockery::mock($codec->getConfig());
 
         $config->shouldReceive('builder')->andReturn($this->builder);
         $config->shouldReceive('parser')->andReturn($this->parser);
         $config->shouldReceive('validator')->andReturn($this->validator);
 
-        $constraint = Mockery::mock(Constraint::class);
+        $constraint = \Mockery::mock(Constraint::class);
         $constraint->shouldReceive('assert')->andReturn();
         $config->shouldReceive('validationConstraints')->andReturn([$constraint]);
 
         return $codec;
     }
 
-    public function getDummyPrivateKey()
+    public function getDummyPrivateKey(): bool|string
     {
         return file_get_contents(__DIR__ . '/Keys/id_rsa');
     }
 
-    public function getDummyPublicKey()
+    public function getDummyPublicKey(): bool|string
     {
         return file_get_contents(__DIR__ . '/Keys/id_rsa.pub');
     }

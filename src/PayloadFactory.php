@@ -18,17 +18,13 @@ class PayloadFactory
 {
     /**
      * The claim factory.
-     *
-     * @var \HyperfExt\Jwt\Claims\Factory
      */
-    protected $claimFactory;
+    protected ClaimFactory $claimFactory;
 
     /**
      * The default claims.
-     *
-     * @var array
      */
-    protected $defaultClaims = [
+    protected array $defaultClaims = [
         'iss',
         'iat',
         'exp',
@@ -54,7 +50,7 @@ class PayloadFactory
      *
      * @return $this
      */
-    public function setDefaultClaims(array $claims)
+    public function setDefaultClaims(array $claims): static
     {
         $this->defaultClaims = $claims;
 
@@ -76,7 +72,7 @@ class PayloadFactory
      *
      * @return $this
      */
-    public function setTtl(int $ttl)
+    public function setTtl(int $ttl): static
     {
         $this->claimFactory->setTtl($ttl);
 

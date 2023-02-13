@@ -10,8 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt;
 
-use BadMethodCallException;
-use Hyperf\Utils\Context;
+use Hyperf\Context\Context;
 use HyperfExt\Jwt\Contracts\JwtSubjectInterface;
 use HyperfExt\Jwt\Contracts\ManagerInterface;
 use HyperfExt\Jwt\Contracts\RequestParser\RequestParserInterface;
@@ -23,43 +22,22 @@ class Jwt
     use CustomClaims;
 
     /**
-     * @var \HyperfExt\Jwt\Manager
-     */
-    protected $manager;
-
-    /**
-     * @var \HyperfExt\Jwt\Contracts\RequestParser\RequestParserInterface
-     */
-    protected $requestParser;
-
-    /**
-     * @var \Psr\Http\Message\ServerRequestInterface
-     */
-    protected $request;
-
-    /**
      * Lock the subject.
-     *
-     * @var bool
      */
-    protected $lockSubject = true;
+    protected bool $lockSubject = true;
 
     public function __construct(
-        ManagerInterface $manager,
-        RequestParserInterface $requestParser,
-        ServerRequestInterface $request
+        protected ManagerInterface $manager,
+        protected RequestParserInterface $requestParser,
+        protected ServerRequestInterface $request,
     ) {
-        $this->manager = $manager;
-        $this->requestParser = $requestParser;
-        $this->request = $request;
     }
 
     /**
      * Magically call the Jwt Manager.
      *
-     * @throws \BadMethodCallException
-     *
      * @return mixed
+     * @throws \BadMethodCallException
      */
     public function __call(string $method, array $parameters)
     {
@@ -67,7 +45,7 @@ class Jwt
             return call_user_func_array([$this->manager, $method], $parameters);
         }
 
-        throw new BadMethodCallException("Method [{$method}] does not exist.");
+        throw new \BadMethodCallException("Method [{$method}] does not exist.");
     }
 
     /**
@@ -91,7 +69,7 @@ class Jwt
     /**
      * Refresh an expired token.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function refresh(bool $forceForever = false): string
     {
@@ -112,10 +90,10 @@ class Jwt
     /**
      * Invalidate a token (add it to the blacklist).
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
      * @return $this
+     * @throws JwtException
      */
-    public function invalidate(bool $forceForever = false)
+    public function invalidate(bool $forceForever = false): static
     {
         $this->requireToken();
 
@@ -128,7 +106,7 @@ class Jwt
      * Alias to get the payload, and as a result checks that
      * the token is valid i.e. not expired or blacklisted.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function checkOrFail(): Payload
     {
@@ -137,10 +115,8 @@ class Jwt
 
     /**
      * Check that the token is valid.
-     *
-     * @return bool|\HyperfExt\Jwt\Payload
      */
-    public function check(bool $getPayload = false)
+    public function check(bool $getPayload = false): Payload|bool
     {
         try {
             $payload = $this->checkOrFail();
@@ -171,11 +147,10 @@ class Jwt
     /**
      * Parse the token from the request.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
      * @return $this
+     * @throws JwtException
      */
-    public function parseToken()
-    {
+    public function parseToken(): static {
         if (! $token = $this->getRequestParser()->parseToken($this->request)) {
             throw new JwtException('The token could not be parsed from the request');
         }
@@ -185,7 +160,7 @@ class Jwt
 
     /**
      * Get the raw Payload instance.
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function getPayload(bool $ignoreExpired = false): Payload
     {
@@ -197,11 +172,10 @@ class Jwt
     /**
      * Convenience method to get a claim value.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
      * @return mixed
+     * @throws JwtException
      */
-    public function getClaim(string $claim)
-    {
+    public function getClaim(string $claim): array {
         return $this->getPayload()->get($claim);
     }
 
@@ -218,7 +192,7 @@ class Jwt
      *
      * @param object|string $model
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function checkSubjectModel($model): bool
     {
@@ -344,7 +318,7 @@ class Jwt
     /**
      * Ensure that a token is available.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     protected function requireToken()
     {

@@ -12,6 +12,7 @@ namespace HyperfTest\Validators;
 
 use HyperfExt\Jwt\Contracts\TokenValidatorInterface;
 use HyperfExt\Jwt\Exceptions\TokenInvalidException;
+use HyperfExt\Jwt\Validators\TokenValidator;
 use HyperfTest\AbstractTestCase;
 
 /**
@@ -20,10 +21,7 @@ use HyperfTest\AbstractTestCase;
  */
 class TokenValidatorTest extends AbstractTestCase
 {
-    /**
-     * @var \HyperfExt\Jwt\Validators\TokenValidator
-     */
-    protected $validator;
+    protected TokenValidator $validator;
 
     public function setUp(): void
     {
@@ -38,7 +36,7 @@ class TokenValidatorTest extends AbstractTestCase
         $this->assertTrue($this->validator->isValid('one.two.three'));
     }
 
-    public function dataProviderMalformedTokens()
+    public function dataProviderMalformedTokens(): array
     {
         return [
             ['one.two.'],
@@ -53,29 +51,25 @@ class TokenValidatorTest extends AbstractTestCase
 
     /**
      * @test
-     * @dataProvider \HyperfTest\Validators\TokenValidatorTest::dataProviderMalformedTokens
-     *
-     * @param string $token
+     * @dataProvider TokenValidatorTest::dataProviderMalformedTokens
      */
-    public function itShouldReturnFalseWhenProvidingAMalformedToken($token)
+    public function itShouldReturnFalseWhenProvidingAMalformedToken(string $token)
     {
         $this->assertFalse($this->validator->isValid($token));
     }
 
     /**
      * @test
-     * @dataProvider \HyperfTest\Validators\TokenValidatorTest::dataProviderMalformedTokens
-     *
-     * @param string $token
+     * @dataProvider TokenValidatorTest::dataProviderMalformedTokens
      */
-    public function itShouldThrowAnExceptionWhenProvidingAMalformedToken($token)
+    public function itShouldThrowAnExceptionWhenProvidingAMalformedToken(string $token)
     {
         $this->expectExceptionMessage('Malformed token');
         $this->expectException(TokenInvalidException::class);
         $this->validator->check($token);
     }
 
-    public function dataProviderTokensWithWrongSegmentsNumber()
+    public function dataProviderTokensWithWrongSegmentsNumber(): array
     {
         return [
             ['one.two'],
@@ -86,22 +80,18 @@ class TokenValidatorTest extends AbstractTestCase
 
     /**
      * @test
-     * @dataProvider \HyperfTest\Validators\TokenValidatorTest::dataProviderTokensWithWrongSegmentsNumber
-     *
-     * @param string $token
+     * @dataProvider TokenValidatorTest::dataProviderTokensWithWrongSegmentsNumber
      */
-    public function itShouldReturnFalseWhenProvidingATokenWithWrongSegmentsNumber($token)
+    public function itShouldReturnFalseWhenProvidingATokenWithWrongSegmentsNumber(string $token)
     {
         $this->assertFalse($this->validator->isValid($token));
     }
 
     /**
      * @test
-     * @dataProvider \HyperfTest\Validators\TokenValidatorTest::dataProviderTokensWithWrongSegmentsNumber
-     *
-     * @param string $token
+     * @dataProvider TokenValidatorTest::dataProviderTokensWithWrongSegmentsNumber
      */
-    public function itShouldThrowAnExceptionWhenProvidingAMalformedTokenWithWrongSegmentsNumber($token)
+    public function itShouldThrowAnExceptionWhenProvidingAMalformedTokenWithWrongSegmentsNumber(string $token)
     {
         $this->expectExceptionMessage('Wrong number of segments');
         $this->expectException(TokenInvalidException::class);

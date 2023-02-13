@@ -10,14 +10,13 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt\Contracts\RequestParser;
 
+use Hyperf\HttpServer\Request;
 use Psr\Http\Message\ServerRequestInterface;
 
 interface HandlerInterface
 {
     /**
      * Parse the request.
-     *
-     * @param \Hyperf\HttpServer\Request|\Psr\Http\Message\ServerRequestInterface $request
      */
-    public function parse(ServerRequestInterface $request): ?string;
+    public function parse(Request|ServerRequestInterface $request): ?string;
 }

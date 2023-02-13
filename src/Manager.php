@@ -21,45 +21,33 @@ class Manager implements ManagerInterface
 {
     /**
      * The JWT codec interface.
-     *
-     * @var \HyperfExt\Jwt\Contracts\CodecInterface
      */
-    protected $codec;
+    protected CodecInterface $codec;
 
     /**
      * The blacklist interface.
-     *
-     * @var \HyperfExt\Jwt\Blacklist
      */
-    protected $blacklist;
+    protected Blacklist $blacklist;
 
     /**
      * the claim factory.
-     *
-     * @var \HyperfExt\Jwt\Claims\Factory
      */
-    protected $claimFactory;
+    protected ClaimFactory $claimFactory;
 
     /**
      * the payload factory.
-     *
-     * @var \HyperfExt\Jwt\PayloadFactory
      */
-    protected $payloadFactory;
+    protected PayloadFactory $payloadFactory;
 
     /**
      * The blacklist flag.
-     *
-     * @var bool
      */
-    protected $blacklistEnabled = true;
+    protected bool $blacklistEnabled = true;
 
     /**
      * the persistent claims.
-     *
-     * @var array
      */
-    protected $persistentClaims = [];
+    protected array $persistentClaims = [];
 
     public function __construct(
         CodecInterface $codec,
@@ -86,7 +74,7 @@ class Manager implements ManagerInterface
     /**
      * Decode a Token and return the Payload.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\TokenBlacklistedException
+     * @throws TokenBlacklistedException
      */
     public function decode(Token $token, bool $checkBlacklist = true, bool $ignoreExpired = false): Payload
     {
@@ -102,8 +90,8 @@ class Manager implements ManagerInterface
     /**
      * Refresh a Token and return a new Token.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\TokenBlacklistedException
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws TokenBlacklistedException
+     * @throws JwtException
      */
     public function refresh(Token $token, bool $forceForever = false, array $customClaims = []): Token
     {
@@ -123,7 +111,7 @@ class Manager implements ManagerInterface
     /**
      * Invalidate a Token by adding it to the blacklist.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function invalidate(Token $token, bool $forceForever = false): bool
     {
@@ -174,7 +162,7 @@ class Manager implements ManagerInterface
      *
      * @return $this
      */
-    public function setBlacklistEnabled(bool $enabled)
+    public function setBlacklistEnabled(bool $enabled): static
     {
         $this->blacklistEnabled = $enabled;
 
@@ -186,7 +174,7 @@ class Manager implements ManagerInterface
      *
      * @return $this
      */
-    public function setPersistentClaims(array $claims)
+    public function setPersistentClaims(array $claims): static
     {
         $this->persistentClaims = $claims;
 
@@ -203,12 +191,8 @@ class Manager implements ManagerInterface
 
     /**
      * Build the claims to go into the refreshed token.
-     *
-     * @param \HyperfExt\Jwt\Payload $payload
-     *
-     * @return array
      */
-    protected function buildRefreshClaims(Payload $payload)
+    protected function buildRefreshClaims(Payload $payload): array
     {
         // Get the claims to be persisted from the payload
         $persistentClaims = Arr::only($payload->toArray(), $this->persistentClaims);

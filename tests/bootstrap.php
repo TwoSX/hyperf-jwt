@@ -8,16 +8,17 @@ declare(strict_types=1);
  * @contact  eric@zhu.email
  * @license  https://github.com/hyperf-ext/jwt/blob/master/LICENSE
  */
+
+use Doctrine\Common\Annotations\AnnotationReader;
 use Hyperf\Config\Config;
+use Hyperf\Context\Context;
 use Hyperf\Contract\ConfigInterface;
-use Hyperf\Di\Annotation\AnnotationReader;
 use Hyperf\Di\ClassLoader;
 use Hyperf\Di\Container;
 use Hyperf\Di\Definition\DefinitionSourceFactory;
 use Hyperf\HttpMessage\Server\Request;
 use Hyperf\HttpServer\Request as HttpServerRequest;
 use Hyperf\Utils\ApplicationContext;
-use Hyperf\Utils\Context;
 use HyperfExt\Jwt\Contracts\PayloadValidatorInterface;
 use HyperfExt\Jwt\Contracts\TokenValidatorInterface;
 use HyperfExt\Jwt\Validators\PayloadValidator;

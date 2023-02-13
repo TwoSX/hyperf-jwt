@@ -10,9 +10,7 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt\Exceptions;
 
-use Exception;
-
-class JwtException extends Exception
+class JwtException extends \Exception
 {
     /**
      * {@inheritdoc}

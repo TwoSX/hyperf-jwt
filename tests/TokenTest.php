@@ -18,10 +18,7 @@ use HyperfExt\Jwt\Token;
  */
 class TokenTest extends AbstractTestCase
 {
-    /**
-     * @var \HyperfExt\Jwt\Token
-     */
-    protected $token;
+    protected Token $token;
 
     public function setUp(): void
     {

@@ -17,17 +17,13 @@ class AuthHeaders implements ParserContract
 {
     /**
      * The header name.
-     *
-     * @var string
      */
-    protected $header = 'authorization';
+    protected string $header = 'authorization';
 
     /**
      * The header prefix.
-     *
-     * @var string
      */
-    protected $prefix = 'bearer';
+    protected string $prefix = 'bearer';
 
     public function parse(ServerRequestInterface $request): ?string
     {
@@ -45,7 +41,7 @@ class AuthHeaders implements ParserContract
      *
      * @return $this
      */
-    public function setHeaderName(string $headerName)
+    public function setHeaderName(string $headerName): static
     {
         $this->header = $headerName;
 
@@ -57,7 +53,7 @@ class AuthHeaders implements ParserContract
      *
      * @return $this
      */
-    public function setHeaderPrefix(string $headerPrefix)
+    public function setHeaderPrefix(string $headerPrefix): static
     {
         $this->prefix = $headerPrefix;
 

@@ -10,17 +10,14 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt\Exceptions;
 
-use Exception;
 use HyperfExt\Jwt\Contracts\ClaimInterface;
 
 class InvalidClaimException extends JwtException
 {
     /**
      * Constructor.
-     *
-     * @param int $code
      */
-    public function __construct(ClaimInterface $claim, $code = 0, Exception $previous = null)
+    public function __construct(ClaimInterface $claim, int $code = 0, \Exception $previous = null)
     {
         parent::__construct('Invalid value provided for claim [' . $claim->getName() . ']', $code, $previous);
     }

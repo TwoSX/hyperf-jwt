@@ -10,8 +10,6 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt\Claims;
 
-use DateInterval;
-use DateTimeInterface;
 use HyperfExt\Jwt\Exceptions\InvalidClaimException;
 use HyperfExt\Jwt\Utils;
 
@@ -19,27 +17,23 @@ trait DatetimeTrait
 {
     /**
      * Time leeway in seconds.
-     *
-     * @var int
      */
-    protected $leeway = 0;
+    protected int $leeway = 0;
 
     /**
      * Set the claim value, and call a validate method.
      *
      * @param mixed $value
      *
-     * @throws \HyperfExt\Jwt\Exceptions\InvalidClaimException
-     *
      * @return $this
      */
-    public function setValue($value)
+    public function setValue(mixed $value): static
     {
-        if ($value instanceof DateInterval) {
+        if ($value instanceof \DateInterval) {
             $value = Utils::now()->add($value);
         }
 
-        if ($value instanceof DateTimeInterface) {
+        if ($value instanceof \DateTimeInterface) {
             $value = $value->getTimestamp();
         }
 
@@ -48,8 +42,9 @@ trait DatetimeTrait
 
     /**
      * {@inheritdoc}
+     * @throws InvalidClaimException
      */
-    public function validateCreate($value)
+    public function validateCreate(mixed $value): float|int|string
     {
         if (! is_numeric($value)) {
             throw new InvalidClaimException($this);
@@ -63,7 +58,7 @@ trait DatetimeTrait
      *
      * @return $this
      */
-    public function setLeeway(int $leeway)
+    public function setLeeway(int $leeway): static
     {
         $this->leeway = $leeway;
 
@@ -72,21 +67,17 @@ trait DatetimeTrait
 
     /**
      * Determine whether the value is in the future.
-     *
-     * @param mixed $value
      */
-    protected function isFuture($value): bool
+    protected function isFuture(mixed $value): bool
     {
-        return Utils::isFuture((int) $value, (int) $this->leeway);
+        return Utils::isFuture((int) $value, $this->leeway);
     }
 
     /**
      * Determine whether the value is in the past.
-     *
-     * @param mixed $value
      */
-    protected function isPast($value): bool
+    protected function isPast(mixed $value): bool
     {
-        return Utils::isPast((int) $value, (int) $this->leeway);
+        return Utils::isPast((int) $value, $this->leeway);
     }
 }

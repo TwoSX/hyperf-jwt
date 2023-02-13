@@ -14,31 +14,28 @@ use Carbon\Carbon;
 use Hyperf\Utils\ApplicationContext;
 use HyperfExt\Jwt\Claims\Factory;
 use HyperfExt\Jwt\Contracts\ManagerInterface;
+use HyperfExt\Jwt\Manager;
 use HyperfExt\Jwt\ManagerFactory;
-use Mockery;
+use Mockery\LegacyMockInterface;
+use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 abstract class AbstractTestCase extends TestCase
 {
-    /**
-     * @var int
-     */
-    protected $testNowTimestamp;
+    protected int $testNowTimestamp;
+
+    protected ContainerInterface $container;
 
     /**
-     * @var \Psr\Container\ContainerInterface
+     * @var LegacyMockInterface|Manager|ManagerInterface|MockInterface
      */
-    protected $container;
+    protected LegacyMockInterface|Manager|ManagerInterface|MockInterface $manager;
 
     /**
-     * @var \HyperfExt\Jwt\Contracts\ManagerInterface|\HyperfExt\Jwt\Manager|\Mockery\LegacyMockInterface|\Mockery\MockInterface
+     * @var Factory
      */
-    protected $manager;
-
-    /**
-     * @var \HyperfExt\Jwt\Claims\Factory
-     */
-    protected $claimFactory;
+    protected Factory $claimFactory;
 
     public function setUp(): void
     {
@@ -47,14 +44,14 @@ abstract class AbstractTestCase extends TestCase
         Carbon::setTestNow($now = Carbon::now());
         $this->testNowTimestamp = $now->getTimestamp();
         $this->container = ApplicationContext::getContainer();
-        $this->container->set(ManagerInterface::class, $this->manager = Mockery::mock(ManagerFactory::class));
+        $this->container->set(ManagerInterface::class, $this->manager = \Mockery::mock(ManagerFactory::class));
         $this->manager->shouldReceive('getClaimFactory')->andReturn($this->claimFactory = new Factory(3600, 3600 * 24 * 14));
     }
 
     public function tearDown(): void
     {
         Carbon::setTestNow();
-        Mockery::close();
+        \Mockery::close();
 
         parent::tearDown();
     }

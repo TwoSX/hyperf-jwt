@@ -15,7 +15,7 @@ use HyperfExt\Jwt\Contracts\JwtFactoryInterface;
 
 class JwtFactory implements JwtFactoryInterface
 {
-    protected $lockSubject = true;
+    protected bool $lockSubject = true;
 
     public function __construct(ConfigInterface $config)
     {

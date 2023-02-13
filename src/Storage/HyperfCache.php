@@ -17,17 +17,13 @@ class HyperfCache implements StorageInterface
 {
     /**
      * The cache repository contract.
-     *
-     * @var \Psr\SimpleCache\CacheInterface
      */
-    protected $cache;
+    protected CacheInterface $cache;
 
     /**
      * The used cache tag.
-     *
-     * @var string
      */
-    protected $tag;
+    protected string $tag;
 
     /**
      * Constructor.
@@ -38,17 +34,17 @@ class HyperfCache implements StorageInterface
         $this->tag = $tag;
     }
 
-    public function add(string $key, $value, int $ttl)
+    public function add(string $key, mixed $value, int $ttl)
     {
         $this->cache->set($this->resolveKey($key), $value, $ttl);
     }
 
-    public function forever(string $key, $value)
+    public function forever(string $key, mixed $value)
     {
         $this->cache->set($this->resolveKey($key), $value);
     }
 
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         return $this->cache->get($this->resolveKey($key));
     }
@@ -70,7 +66,7 @@ class HyperfCache implements StorageInterface
         return $this->cache;
     }
 
-    protected function resolveKey(string $key)
+    protected function resolveKey(string $key): string
     {
         return $this->tag . '.' . $key;
     }

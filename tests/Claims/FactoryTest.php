@@ -29,10 +29,7 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class FactoryTest extends AbstractTestCase
 {
-    /**
-     * @var \HyperfExt\Jwt\Claims\Factory
-     */
-    protected $factory;
+    protected Factory $factory;
 
     public function setUp(): void
     {

@@ -55,7 +55,7 @@ class CollectionTest extends AbstractTestCase
         $this->assertInstanceOf(Subject::class, $collection->getByClaimName('sub'));
     }
 
-    private function getCollection()
+    private function getCollection(): Collection
     {
         $claims = [
             new Subject(1),

@@ -18,6 +18,7 @@ class TokenValidator implements TokenValidatorInterface
 {
     /**
      * Check the structure of the token.
+     * @throws TokenInvalidException
      */
     public function check(string $value): string
     {
@@ -32,7 +33,7 @@ class TokenValidator implements TokenValidatorInterface
     {
         try {
             $this->check($value);
-        } catch (JwtException $e) {
+        } catch (JwtException) {
             return false;
         }
 
@@ -40,9 +41,9 @@ class TokenValidator implements TokenValidatorInterface
     }
 
     /**
-     * @throws \HyperfExt\Jwt\Exceptions\TokenInvalidException
+     * @throws TokenInvalidException
      */
-    protected function validateStructure(string $token)
+    protected function validateStructure(string $token): static
     {
         $parts = explode('.', $token);
 

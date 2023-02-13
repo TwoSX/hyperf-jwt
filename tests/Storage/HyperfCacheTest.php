@@ -13,7 +13,6 @@ namespace HyperfTest\Storage;
 use Hyperf\Cache\Cache;
 use HyperfExt\Jwt\Storage\HyperfCache;
 use HyperfTest\AbstractTestCase;
-use Mockery;
 
 /**
  * @internal
@@ -21,26 +20,17 @@ use Mockery;
  */
 class HyperfCacheTest extends AbstractTestCase
 {
-    /**
-     * @var \Hyperf\Cache\Cache|\Mockery\MockInterface
-     */
-    protected $cache;
+    protected Cache $cache;
 
-    /**
-     * @var \HyperfExt\Jwt\Storage\HyperfCache
-     */
-    protected $storage;
+    protected HyperfCache $storage;
 
-    /**
-     * @var string
-     */
-    protected $tag;
+    protected string $tag;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->cache = Mockery::mock(Cache::class);
+        $this->cache = \Mockery::mock(Cache::class);
         $this->tag = 'jwt.default';
         $this->storage = new HyperfCache($this->cache, $this->tag);
     }
@@ -114,7 +104,7 @@ class HyperfCacheTest extends AbstractTestCase
         $this->assertSame(['foo' => 'bar'], $this->storage->get('foo'));
     }
 
-    protected function resolveKey(string $key)
+    protected function resolveKey(string $key): string
     {
         return $this->tag . '.' . $key;
     }

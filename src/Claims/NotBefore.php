@@ -16,8 +16,11 @@ class NotBefore extends AbstractClaim
 {
     use DatetimeTrait;
 
-    protected $name = 'nbf';
+    protected string $name = 'nbf';
 
+    /**
+     * @throws TokenInvalidException
+     */
     public function validate(bool $ignoreExpired = false): bool
     {
         if ($this->isFuture($this->getValue())) {

@@ -10,7 +10,6 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt;
 
-use Exception;
 use Hyperf\Utils\Arr;
 use Hyperf\Utils\Collection;
 use HyperfExt\Jwt\Contracts\CodecInterface;
@@ -37,10 +36,8 @@ class Codec implements CodecInterface
 {
     /**
      * Signers that this provider supports.
-     *
-     * @var array
      */
-    protected $signers = [
+    protected array $signers = [
         'HS256' => HS256::class,
         'HS384' => HS384::class,
         'HS512' => HS512::class,
@@ -52,7 +49,7 @@ class Codec implements CodecInterface
         'ES512' => ES512::class,
     ];
 
-    protected $asymmetric = [
+    protected array $asymmetric = [
         'HS256' => false,
         'HS384' => false,
         'HS512' => false,
@@ -66,45 +63,33 @@ class Codec implements CodecInterface
 
     /**
      * The secret.
-     *
-     * @var string
      */
-    protected $secret;
+    protected string $secret;
 
     /**
      * The array of keys.
-     *
-     * @var array
      */
-    protected $keys;
+    protected array $keys;
 
     /**
      * The used algorithm.
-     *
-     * @var string
      */
-    protected $algo;
+    protected string $algo;
 
     /**
      * The Configuration instance.
-     *
-     * @var \Lcobucci\JWT\Configuration
      */
-    protected $config;
+    protected ?Configuration $config;
 
     /**
      * The Signer instance.
-     *
-     * @var \Lcobucci\JWT\Signer
      */
-    protected $signer;
+    protected ?Signer $signer = null;
 
     /**
-     * @param null|\Lcobucci\JWT\Configuration $config
-     *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
-    public function __construct(string $secret, string $algo, array $keys, $config = null)
+    public function __construct(string $secret, string $algo, array $keys, ?Configuration $config = null)
     {
         $this->secret = $secret;
         $this->algo = $algo;
@@ -132,7 +117,7 @@ class Codec implements CodecInterface
      *
      * @return $this
      */
-    public function setAlgo(string $algo)
+    public function setAlgo(string $algo): static
     {
         $this->algo = $algo;
 
@@ -152,7 +137,7 @@ class Codec implements CodecInterface
      *
      * @return $this
      */
-    public function setSecret(string $secret)
+    public function setSecret(string $secret): static
     {
         $this->secret = $secret;
 
@@ -161,10 +146,8 @@ class Codec implements CodecInterface
 
     /**
      * Get the secret used to sign the token.
-     *
-     * @return string
      */
-    public function getSecret()
+    public function getSecret(): string
     {
         return $this->secret;
     }
@@ -174,7 +157,7 @@ class Codec implements CodecInterface
      *
      * @return $this
      */
-    public function setKeys(array $keys)
+    public function setKeys(array $keys): static
     {
         $this->keys = $keys;
 
@@ -224,7 +207,7 @@ class Codec implements CodecInterface
     /**
      * Create a JSON Web Token.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function encode(array $payload): string
     {
@@ -235,7 +218,7 @@ class Codec implements CodecInterface
                 $this->addClaim($builder, $key, $value);
             }
             return $builder->getToken($this->config->signer(), $this->config->signingKey())->toString();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new JwtException('Could not create token: ' . $e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -243,7 +226,7 @@ class Codec implements CodecInterface
     /**
      * Decode a JSON Web Token.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     public function decode(string $token): array
     {
@@ -251,7 +234,7 @@ class Codec implements CodecInterface
 
         try {
             $jwt = $parser->parse($token);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new TokenInvalidException('Could not decode token: ' . $e->getMessage(), $e->getCode(), $e);
         }
 
@@ -272,20 +255,16 @@ class Codec implements CodecInterface
 
     /**
      * Gets the {@see $config} attribute.
-     *
-     * @return \Lcobucci\JWT\Configuration
      */
-    public function getConfig()
+    public function getConfig(): ?Configuration
     {
         return $this->config;
     }
 
     /**
      * Adds a claim to the {@see $config}.
-     *
-     * @param mixed $value
      */
-    protected function addClaim(Builder $builder, string $key, $value)
+    protected function addClaim(Builder $builder, string $key, mixed $value)
     {
         switch ($key) {
             case RegisteredClaims::ID:
@@ -317,7 +296,7 @@ class Codec implements CodecInterface
     /**
      * Get the signer instance.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\JwtException
+     * @throws JwtException
      */
     protected function getSigner(): Signer
     {

@@ -14,16 +14,15 @@ use Hyperf\Contract\ConfigInterface;
 use HyperfExt\Jwt\Claims\Collection;
 use HyperfExt\Jwt\Contracts\PayloadValidatorInterface;
 use HyperfExt\Jwt\Exceptions\JwtException;
+use HyperfExt\Jwt\Exceptions\TokenExpiredException;
 use HyperfExt\Jwt\Exceptions\TokenInvalidException;
 
 class PayloadValidator implements PayloadValidatorInterface
 {
     /**
      * The required claims.
-     *
-     * @var array
      */
-    protected $requiredClaims = [];
+    protected array $requiredClaims = [];
 
     public function __construct(ConfigInterface $config)
     {
@@ -64,7 +63,7 @@ class PayloadValidator implements PayloadValidatorInterface
      * Ensure the payload contains the required claims and
      * the claims have the relevant type.
      *
-     * @throws \HyperfExt\Jwt\Exceptions\TokenInvalidException
+     * @throws TokenInvalidException
      */
     protected function validateStructure(Collection $claims)
     {

@@ -20,9 +20,9 @@ class IssuedAt extends AbstractClaim
         validateCreate as commonValidateCreate;
     }
 
-    protected $name = 'iat';
+    protected string $name = 'iat';
 
-    public function validateCreate($value)
+    public function validateCreate(mixed $value)
     {
         $this->commonValidateCreate($value);
 
@@ -33,6 +33,10 @@ class IssuedAt extends AbstractClaim
         return $value;
     }
 
+    /**
+     * @throws TokenExpiredException
+     * @throws TokenInvalidException
+     */
     public function validate(bool $ignoreExpired = false): bool
     {
         if ($this->isFuture($value = $this->getValue())) {

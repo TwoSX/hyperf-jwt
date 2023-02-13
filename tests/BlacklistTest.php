@@ -20,7 +20,7 @@ use HyperfExt\Jwt\Claims\NotBefore;
 use HyperfExt\Jwt\Claims\Subject;
 use HyperfExt\Jwt\Contracts\StorageInterface;
 use HyperfExt\Jwt\Payload;
-use Mockery;
+use Mockery\MockInterface;
 
 /**
  * @internal
@@ -28,21 +28,15 @@ use Mockery;
  */
 class BlacklistTest extends AbstractTestCase
 {
-    /**
-     * @var \HyperfExt\Jwt\Contracts\StorageInterface|\Mockery\MockInterface
-     */
-    protected $storage;
+    protected StorageInterface|MockInterface $storage;
 
-    /**
-     * @var \HyperfExt\Jwt\Blacklist
-     */
-    protected $blacklist;
+    protected Blacklist $blacklist;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->storage = Mockery::mock(StorageInterface::class);
+        $this->storage = \Mockery::mock(StorageInterface::class);
         $this->blacklist = new Blacklist($this->storage, 0, 3600 * 24 * 14);
     }
 
@@ -291,7 +285,7 @@ class BlacklistTest extends AbstractTestCase
     }
 
     /** @test */
-    public function itShouldEmptyTheBlacklist()
+    public function itShouldEmptyTheBlacklist(): void
     {
         $this->storage->shouldReceive('flush');
         $this->assertTrue($this->blacklist->clear());

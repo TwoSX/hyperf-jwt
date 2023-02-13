@@ -17,19 +17,17 @@ class Collection extends HyperfCollection
     /**
      * Create a new collection.
      *
-     * @param mixed $items
+     * @param AbstractClaim[] $items
      */
-    public function __construct($items = [])
+    public function __construct(array $items = [])
     {
         parent::__construct($this->getArrayableItems($items));
     }
 
     /**
      * Get a Claim instance by it's unique name.
-     *
-     * @param mixed $default
      */
-    public function getByClaimName(string $name, ?callable $callback = null, $default = null): AbstractClaim
+    public function getByClaimName(string $name, ?callable $callback = null, mixed $default = null): AbstractClaim
     {
         return $this->filter(function (AbstractClaim $claim) use ($name) {
             return $claim->getName() === $name;
@@ -41,7 +39,7 @@ class Collection extends HyperfCollection
      *
      * @return $this
      */
-    public function validate(bool $ignoreExpired = false)
+    public function validate(bool $ignoreExpired = false): static
     {
         $this->each(function ($claim) use ($ignoreExpired) {
             $claim->validate($ignoreExpired);
@@ -51,10 +49,8 @@ class Collection extends HyperfCollection
 
     /**
      * Determine if the Collection contains all of the given keys.
-     *
-     * @param mixed $claims
      */
-    public function hasAllClaims($claims): bool
+    public function hasAllClaims(mixed $claims): bool
     {
         return count($claims) and (new static($claims))->diff($this->keys())->isEmpty();
     }
@@ -79,10 +75,8 @@ class Collection extends HyperfCollection
 
     /**
      * Ensure that the given claims array is keyed by the claim name.
-     *
-     * @param mixed $items
      */
-    private function sanitizeClaims($items): array
+    private function sanitizeClaims(mixed $items): array
     {
         $claims = [];
         foreach ($items as $key => $value) {

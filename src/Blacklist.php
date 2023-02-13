@@ -16,31 +16,23 @@ class Blacklist
 {
     /**
      * The storage.
-     *
-     * @var \HyperfExt\Jwt\Contracts\StorageInterface
      */
-    protected $storage;
+    protected StorageInterface $storage;
 
     /**
      * The grace period when a token is blacklisted. In seconds.
-     *
-     * @var int
      */
-    protected $gracePeriod;
+    protected int $gracePeriod;
 
     /**
      * Number of seconds from issue date in which a JWT can be refreshed.
-     *
-     * @var null|int
      */
-    protected $refreshTtl;
+    protected ?int $refreshTtl;
 
     /**
      * The unique key held within the blacklist.
-     *
-     * @var string
      */
-    protected $key = 'jti';
+    protected string $key = 'jti';
 
     /**
      * Constructor.
@@ -126,9 +118,9 @@ class Blacklist
      *
      * @return $this
      */
-    public function setGracePeriod(int $gracePeriod)
+    public function setGracePeriod(int $gracePeriod): static
     {
-        $this->gracePeriod = (int) $gracePeriod;
+        $this->gracePeriod = $gracePeriod;
 
         return $this;
     }
@@ -143,10 +135,8 @@ class Blacklist
 
     /**
      * Get the unique key held within the blacklist.
-     *
-     * @return mixed
      */
-    public function getKey(Payload $payload)
+    public function getKey(Payload $payload): mixed
     {
         return $payload($this->key);
     }
@@ -156,7 +146,7 @@ class Blacklist
      *
      * @return $this
      */
-    public function setKey(string $key)
+    public function setKey(string $key): static
     {
         $this->key = value($key);
 
@@ -168,9 +158,9 @@ class Blacklist
      *
      * @return $this
      */
-    public function setRefreshTtl(?int $refreshTtl)
+    public function setRefreshTtl(?int $refreshTtl): static
     {
-        $this->refreshTtl = $refreshTtl === null ? null : (int) $refreshTtl;
+        $this->refreshTtl = $refreshTtl === null ? null : $refreshTtl;
 
         return $this;
     }

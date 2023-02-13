@@ -10,9 +10,6 @@ declare(strict_types=1);
  */
 namespace HyperfExt\Jwt;
 
-use ArrayAccess;
-use BadMethodCallException;
-use Countable;
 use Hyperf\Utils\ApplicationContext;
 use Hyperf\Utils\Arr;
 use Hyperf\Utils\Contracts\Arrayable;
@@ -21,21 +18,15 @@ use HyperfExt\Jwt\Claims\AbstractClaim;
 use HyperfExt\Jwt\Claims\Collection;
 use HyperfExt\Jwt\Contracts\PayloadValidatorInterface;
 use HyperfExt\Jwt\Exceptions\PayloadException;
-use JsonSerializable;
 
-class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerializable
+class Payload implements \ArrayAccess, Arrayable, \Countable, Jsonable, \JsonSerializable
 {
     /**
      * The collection of claims.
-     *
-     * @var \HyperfExt\Jwt\Claims\Collection
      */
-    private $claims;
+    private Collection $claims;
 
-    /**
-     * @var \HyperfExt\Jwt\Contracts\PayloadValidatorInterface
-     */
-    private $validator;
+    private PayloadValidatorInterface $validator;
 
     /**
      * Build the Payload.
@@ -56,12 +47,8 @@ class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerial
 
     /**
      * Invoke the Payload as a callable function.
-     *
-     * @param mixed $claim
-     *
-     * @return mixed
      */
-    public function __invoke($claim = null)
+    public function __invoke(mixed $claim = null): mixed
     {
         return $this->get($claim);
     }
@@ -69,8 +56,8 @@ class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerial
     /**
      * Magically get a claim value.
      *
-     * @throws \BadMethodCallException
      * @return mixed
+     * @throws \BadMethodCallException
      */
     public function __call(string $method, array $parameters)
     {
@@ -82,7 +69,7 @@ class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerial
             }
         }
 
-        throw new BadMethodCallException(sprintf('The claim [%s] does not exist on the payload.', $method));
+        throw new \BadMethodCallException(sprintf('The claim [%s] does not exist on the payload.', $method));
     }
 
     /**
@@ -123,12 +110,8 @@ class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerial
 
     /**
      * Get the payload.
-     *
-     * @param mixed $claim
-     *
-     * @return mixed
      */
-    public function get($claim = null)
+    public function get(mixed $claim = null): mixed
     {
         $claim = value($claim);
 
@@ -193,35 +176,26 @@ class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerial
 
     /**
      * Determine if an item exists at an offset.
-     *
-     * @param mixed $key
      */
-    public function offsetExists($key): bool
+    public function offsetExists(mixed $offset): bool
     {
-        return Arr::has($this->toArray(), $key);
+        return Arr::has($this->toArray(), $offset);
     }
 
     /**
      * Get an item at a given offset.
-     *
-     * @param mixed $key
-     *
-     * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet(mixed $offset): mixed
     {
-        return Arr::get($this->toArray(), $key);
+        return Arr::get($this->toArray(), $offset);
     }
 
     /**
      * Don't allow changing the payload as it should be immutable.
      *
-     * @param mixed $key
-     * @param mixed $value
-     *
-     * @throws \HyperfExt\Jwt\Exceptions\PayloadException
+     * @throws PayloadException
      */
-    public function offsetSet($key, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new PayloadException('The payload is immutable');
     }
@@ -229,11 +203,9 @@ class Payload implements ArrayAccess, Arrayable, Countable, Jsonable, JsonSerial
     /**
      * Don't allow changing the payload as it should be immutable.
      *
-     * @param string $key
-     *
-     * @throws \HyperfExt\Jwt\Exceptions\PayloadException
+     * @throws PayloadException
      */
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $offset): void
     {
         throw new PayloadException('The payload is immutable');
     }

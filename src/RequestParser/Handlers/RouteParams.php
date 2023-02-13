@@ -17,9 +17,6 @@ class RouteParams implements ParserContract
 {
     use KeyTrait;
 
-    /**
-     * @param \Hyperf\HttpServer\Request|\Psr\Http\Message\ServerRequestInterface $request
-     */
     public function parse(ServerRequestInterface $request): ?string
     {
         return $request->route($this->key);
